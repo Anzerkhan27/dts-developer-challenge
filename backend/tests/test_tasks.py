@@ -48,3 +48,27 @@ def test_get_tasks():
     assert "id" in task
     assert task["title"] == payload["title"]
     assert task["description"] == payload["description"]
+
+
+
+def test_get_task_by_id():
+    # Create a task first
+    payload = {
+        "title": "Lookup task",
+        "description": "Single task lookup",
+        "status": "pending",
+        "due_datetime": "2025-05-21T12:00:00"
+    }
+
+    post_response = client.post("/tasks", json=payload)
+    assert post_response.status_code == 200
+    task_id = post_response.json()["id"]
+
+    # Now try to GET it by ID
+    get_response = client.get(f"/tasks/{task_id}")
+    assert get_response.status_code == 200
+
+    data = get_response.json()
+    assert data["id"] == task_id
+    assert data["title"] == payload["title"]
+    assert data["description"] == payload["description"]

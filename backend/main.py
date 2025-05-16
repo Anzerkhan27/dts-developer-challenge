@@ -8,6 +8,8 @@ from database import SessionLocal
 from schemas import TaskCreate, Task as TaskSchema
 from models import Task as TaskModel
 from uuid import uuid4
+from fastapi import HTTPException
+from uuid import UUID
 
 
 # Dependency to inject a DB session into routes
@@ -47,3 +49,12 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
 @app.get("/tasks", response_model=List[TaskSchema])
 def get_tasks(db: Session = Depends(get_db)):
     return db.query(TaskModel).all()
+
+
+
+@app.get("/tasks/{task_id}", response_model=TaskSchema)
+def get_task(task_id: UUID, db: Session = Depends(get_db)):
+    task = db.query(TaskModel).filter(TaskModel.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
