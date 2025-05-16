@@ -99,3 +99,26 @@ def test_update_task_status():
     assert updated["id"] == task_id
     assert updated["status"] == "completed"
     assert updated["title"] == payload["title"]
+
+
+def test_delete_task():
+    # Create a task to delete
+    payload = {
+        "title": "Delete me",
+        "description": "This task will be removed",
+        "status": "pending",
+        "due_datetime": "2025-05-23T10:00:00"
+    }
+
+    post_response = client.post("/tasks", json=payload)
+    assert post_response.status_code == 200
+    task_id = post_response.json()["id"]
+
+    # Delete the task
+    delete_response = client.delete(f"/tasks/{task_id}")
+    assert delete_response.status_code == 200
+    assert delete_response.json() == {"detail": "Task deleted"}
+
+    # Confirm it’s really gone
+    get_response = client.get(f"/tasks/{task_id}")
+    assert get_response.status_code == 404
