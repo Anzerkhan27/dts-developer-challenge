@@ -12,6 +12,13 @@ from fastapi import HTTPException
 from uuid import UUID
 
 
+
+from fastapi.middleware.cors import CORSMiddleware
+
+
+
+
+
 # Dependency to inject a DB session into routes
 def get_db():
     db = SessionLocal()
@@ -25,6 +32,16 @@ models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For dev only
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/ping")
 def ping():

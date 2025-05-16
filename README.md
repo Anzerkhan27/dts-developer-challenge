@@ -86,9 +86,8 @@ Anzer Khan – [linkedin.com/in/anzer-khan-31a14a209](https://linkedin.com/in/an
 * [ ] Add database support (PostgreSQL or SQLite)
 * [ ] Deploy frontend to Cloudflare (optional)
 
-````
 
----
+
 
 # 📦 DTS Developer Challenge – Backend Summary
 
