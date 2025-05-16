@@ -88,6 +88,90 @@ Anzer Khan – [linkedin.com/in/anzer-khan-31a14a209](https://linkedin.com/in/an
 
 ````
 
+---
 
+# 📦 DTS Developer Challenge – Backend Summary
+
+## 👤 Candidate
+
+**Anzer Khan**
+Applying for: **Software Developer (SEO) – HMCTS (Job ID: 4537)**
+
+---
+
+## 🔧 Tech Stack Used
+
+| Area             | Tooling/Frameworks         |
+| ---------------- | -------------------------- |
+| Backend          | FastAPI, Uvicorn           |
+| Language         | Python 3.11                |
+| Database (local) | SQLite (file)              |
+| Tests            | Pytest, FastAPI TestClient |
+| CI/CD            | GitHub Actions             |
+| Deployment       | Railway (Dockerized)       |
+| Schema & Models  | Pydantic + SQLAlchemy ORM  |
+
+---
+
+## ✅ API Requirements Implemented
+
+| Feature             | Endpoint             | Status |
+| ------------------- | -------------------- | ------ |
+| Ping Test           | `GET /ping`          | ✅      |
+| Create a Task       | `POST /tasks`        | ✅      |
+| Retrieve All Tasks  | `GET /tasks`         | ✅      |
+| Retrieve Task by ID | `GET /tasks/{id}`    | ✅      |
+| Update Task Status  | `PUT /tasks/{id}`    | ✅      |
+| Delete a Task       | `DELETE /tasks/{id}` | ✅      |
+
+---
+
+## ⚙️ Key Concepts Demonstrated
+
+* **Schema Validation** using Pydantic (`TaskCreate`, `Task`, `TaskUpdate`)
+* **Separation of Concerns**: `models.py`, `schemas.py`, `database.py`, `main.py`
+* **Error Handling** with custom `404` and validation errors
+* **Test Coverage** for all endpoints using `pytest`
+* **CI Integration** via GitHub Actions (runs on every push to `main`)
+* **Deployment** via Railway with containerized FastAPI app
+* **Live API Testing** via Swagger UI at `/docs`
+
+---
+
+## 🧪 Tests Implemented
+
+* ✅ `test_ping()`
+* ✅ `test_create_task()`
+* ✅ `test_get_tasks()`
+* ✅ `test_get_task_by_id()`
+* ✅ `test_update_task_status()`
+* ✅ `test_delete_task()`
+
+Each test:
+
+* Creates real task data via `POST`
+* Validates API behavior
+* Cleans itself up where needed
+* Is automatically triggered via CI on push
+
+---
+
+## 🧠 Notes
+
+* Local DB used: `sqlite:///./tasks.db` for development
+* In-memory DB for tests **deferred until post-MVP**, based on scope
+* Project uses **UUIDs** for task IDs and ISO-formatted `due_datetime`
+* Container is deployed via **Railway Nixpacks** with a `uvicorn` start command
+
+---
+
+## 🔜 Next Steps
+
+* [ ] Build frontend with React (or GOV.UK-styled template)
+* [ ] Connect to FastAPI endpoints
+* [ ] Deploy frontend (Cloudflare or Netlify)
+* [ ] Add PostgreSQL plugin on Railway for production persistence
+
+---
 
 
