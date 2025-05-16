@@ -1,15 +1,13 @@
 from fastapi import FastAPI
 from database import engine
 import models
+from typing import List
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from database import SessionLocal
 from schemas import TaskCreate, Task as TaskSchema
 from models import Task as TaskModel
 from uuid import uuid4
-
-
-
 
 
 # Dependency to inject a DB session into routes
@@ -21,7 +19,6 @@ def get_db():
         db.close()
 
 
-
 models.Base.metadata.create_all(bind=engine)
 
 
@@ -30,7 +27,6 @@ app = FastAPI()
 @app.get("/ping")
 def ping():
     return {"message": "pong"}
-
 
 
 @app.post("/tasks", response_model=TaskSchema)
@@ -47,3 +43,7 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
     db.refresh(new_task)
     return new_task
 
+
+@app.get("/tasks", response_model=List[TaskSchema])
+def get_tasks(db: Session = Depends(get_db)):
+    return db.query(TaskModel).all()
