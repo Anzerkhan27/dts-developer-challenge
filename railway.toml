@@ -1,0 +1,8 @@
+[project]
+name = "hmcts-backend"
+
+[build]
+root = "backend"
+
+[deploy]
+start = "uvicorn main:app --host=0.0.0.0 --port=8000"
