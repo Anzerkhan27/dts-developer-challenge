@@ -72,3 +72,30 @@ def test_get_task_by_id():
     assert data["id"] == task_id
     assert data["title"] == payload["title"]
     assert data["description"] == payload["description"]
+
+
+def test_update_task_status():
+    # Create a task to update
+    payload = {
+        "title": "Task to update",
+        "description": "Should change status",
+        "status": "pending",
+        "due_datetime": "2025-05-22T15:00:00"
+    }
+
+    post_response = client.post("/tasks", json=payload)
+    assert post_response.status_code == 200
+    task_id = post_response.json()["id"]
+
+    # Update the task status
+    update_payload = {
+        "status": "completed"
+    }
+
+    put_response = client.put(f"/tasks/{task_id}", json=update_payload)
+    assert put_response.status_code == 200
+
+    updated = put_response.json()
+    assert updated["id"] == task_id
+    assert updated["status"] == "completed"
+    assert updated["title"] == payload["title"]

@@ -5,7 +5,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from database import SessionLocal
-from schemas import TaskCreate, Task as TaskSchema
+from schemas import TaskCreate, Task as TaskSchema, TaskUpdate
 from models import Task as TaskModel
 from uuid import uuid4
 from fastapi import HTTPException
@@ -57,4 +57,17 @@ def get_task(task_id: UUID, db: Session = Depends(get_db)):
     task = db.query(TaskModel).filter(TaskModel.id == task_id).first()
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
+
+@app.put("/tasks/{task_id}", response_model=TaskSchema)
+def update_task_status(task_id: UUID, task_update: TaskUpdate, db: Session = Depends(get_db)):
+    task = db.query(TaskModel).filter(TaskModel.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    task.status = task_update.status
+    db.commit()
+    db.refresh(task)
     return task
