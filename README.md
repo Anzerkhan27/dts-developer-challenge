@@ -174,3 +174,65 @@ Each test:
 ---
 
 
+
+## 🚀 DTS Developer Challenge – Caseworker Task Manager
+
+This full-stack project is built for the HMCTS Developer Challenge. It allows caseworkers to manage tasks via a clean API and user-friendly frontend interface.
+
+---
+
+### ✅ Features Implemented
+
+- 🔧 **FastAPI Backend**
+  - Create, update, delete, and retrieve tasks
+  - Validation with Pydantic models
+  - SQLite for local development
+  - UUID-based unique task IDs
+  - CORS enabled for local development
+  - RESTful endpoints
+
+- 💻 **React + TypeScript Frontend**
+  - Fetches and displays tasks from backend
+  - Clean component-based architecture
+  - Tailwind CSS for rapid UI styling
+  - Environment-based backend switching (`.env` support)
+
+- 🧪 **Testing + CI**
+  - Pytest unit tests for backend
+  - GitHub Actions CI (runs on every push to `main`)
+  - Local and CI test environments verified
+
+- 🚀 **Deployment**
+  - Backend deployed via Railway using Docker
+  - CI pipeline tested and verified for production pushes
+
+---
+
+### 🔮 Future Work (Planned)
+
+- ✅ **Task Creation from Frontend**
+- ✅ **Task Status Update (e.g., Mark as Complete)**
+- ✅ **Task Deletion UI**
+- ⏳ **Form validation and user feedback on frontend**
+- ⏳ **Connect production frontend to Railway backend**
+- ⏳ **Switch database to PostgreSQL in production**
+- ⏳ **Add dark mode toggle (optional UI enhancement)**
+- ⏳ **Final polishing, responsiveness, and accessibility audit**
+- ⏳ **Refactor into clean reusable components**
+- ⏳ **Polish README and add live demo links**
+
+---
+
+### 🧠 Tech Stack
+
+| Layer      | Technology                    |
+|------------|-------------------------------|
+| Backend    | FastAPI, SQLite, SQLAlchemy   |
+| Frontend   | React + TypeScript, Vite      |
+| Styling    | Tailwind CSS                  |
+| CI/CD      | GitHub Actions                |
+| Deployment | Railway (Dockerized backend)  |
+```
+
+---
+
