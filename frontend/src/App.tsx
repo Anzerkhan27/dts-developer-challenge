@@ -1,9 +1,8 @@
-
-// src/App.tsx
 import { useEffect, useState } from 'react';
 import Header from './components/Header';
 import { TaskForm } from './components/TaskForm';
-import { TaskList } from './components/TaskList';
+
+import {TaskList} from './components/TaskList';
 
 interface Task {
   id: string;
@@ -19,6 +18,9 @@ export default function App() {
   const [description, setDescription] = useState('');
   const [dueDatetime, setDueDatetime] = useState('');
   const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState<'all' | 'complete' | 'open'>('all');
+  const [showForm, setShowForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -43,13 +45,23 @@ export default function App() {
     const res = await fetch(`${apiUrl}/tasks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, due_datetime: dueDatetime, status: 'Open' }),
+      body: JSON.stringify({
+        title,
+        description,
+        due_datetime: dueDatetime,
+        status: 'Open',
+      }),
     });
+
     if (res.ok) {
       setTitle('');
       setDescription('');
       setDueDatetime('');
       fetchTasks();
+      setShowForm(false);
+      setTimeout(() => {
+        document.getElementById('task-form-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
   };
 
@@ -67,22 +79,66 @@ export default function App() {
     fetchTasks();
   };
 
+  const filteredTasks = tasks.filter(task => {
+    const matchesView =
+      activeView === 'complete'
+        ? task.status.toLowerCase() === 'complete'
+        : activeView === 'open'
+        ? task.status.toLowerCase() !== 'complete'
+        : true;
+
+    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+
+    return matchesView && matchesSearch;
+  });
+
   return (
     <>
-      <Header />
-      <div className="max-w-4xl mx-auto px-4 py-10 font-sans text-black">
-        <h1 className="text-3xl font-bold mb-8">Caseworker Tasks</h1>
-        <TaskForm
-          title={title}
-          description={description}
-          dueDatetime={dueDatetime}
-          setTitle={setTitle}
-          setDescription={setDescription}
-          setDueDatetime={setDueDatetime}
-          onSubmit={handleCreateTask}
+     <Header
+          onViewChange={setActiveView}
+          onToggleForm={() => setShowForm(prev => !prev)}
+          isFormVisible={showForm}
+          onSearchChange={setSearchQuery}
         />
-        <hr className="my-6 border-gray-300" />
-        {loading ? <p className="text-gray-600">Loading tasks…</p> : <TaskList tasks={tasks} onComplete={handleUpdateStatus} onDelete={handleDelete} />}
+          <div className="max-w-4xl mx-auto px-4 pt-8 pb-4 font-sans text-black">
+      <h1 className="text-2xl font-bold mb-4">
+        {showForm
+          ? 'Add New Task'
+          : activeView === 'complete'
+          ? 'Completed Tasks'
+          : activeView === 'open'
+          ? 'Current Tasks'
+          : 'All Tasks'}
+      </h1>
+    </div>
+      <div className="max-w-4xl mx-auto px-4 py-10 font-sans text-black">
+        {showForm && (
+          <div id="task-form-section">
+            <TaskForm
+              title={title}
+              description={description}
+              dueDatetime={dueDatetime}
+              setTitle={setTitle}
+              setDescription={setDescription}
+              setDueDatetime={setDueDatetime}
+              onSubmit={handleCreateTask}
+            />
+            <hr className="my-6 border-gray-300" />
+          </div>
+        )}
+
+        {loading ? (
+          <p className="text-gray-600">Loading tasks…</p>
+        ) : filteredTasks.length === 0 ? (
+          <p className="text-gray-600">No tasks found.</p>
+        ) : (
+          <TaskList
+            tasks={filteredTasks}
+            onComplete={handleUpdateStatus}
+            onDelete={handleDelete}
+          />
+        )}
       </div>
     </>
   );
