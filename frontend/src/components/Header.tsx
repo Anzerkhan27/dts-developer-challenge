@@ -5,48 +5,59 @@ interface HeaderProps {
   onSearchChange: (query: string) => void;
 }
 
-export default function Header({ onViewChange, onToggleForm, isFormVisible, onSearchChange }: HeaderProps) {
-
+export default function Header({
+  onViewChange,
+  onToggleForm,
+  isFormVisible,
+  onSearchChange,
+}: HeaderProps) {
   return (
-    <header className="bg-black text-white px-4 py-3">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="text-xl font-bold tracking-tight">HMCTS Caseworker Portal</div>
+    <>
+      {/* Top GOV.UK-style black header */}
+      <header className="bg-black text-white border-b-4 border-blue-600">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          {/* GOV.UK logo and text */}
+          <div className="flex items-center gap-3">
+            <img src="/image.png" alt="Crown logo" className="h-6 w-auto" />
+            <span className="text-xl font-bold">GOV.UK</span>
+          </div>
 
-        <nav className="flex flex-wrap items-center gap-6 text-sm">
-          <button onClick={() => onViewChange('open')} className="hover:underline text-gray-100">
-            Current Tasks
+        </div>
+      </header>
+
+      {/* GOV-style white nav bar */}
+      <nav className="bg-white px-4 py-2 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-4 text-base font-medium text-black">
+
+                <button onClick={() => onViewChange('open')} className="hover:underline">
+            Current tasks
           </button>
-          <button onClick={() => onViewChange('complete')} className="hover:underline text-gray-100">
-            Completed Tasks
+          <button onClick={() => onViewChange('complete')} className="hover:underline">
+            Completed tasks
           </button>
-          <button
-              onClick={onToggleForm}
-              className="hover:underline text-gray-100 flex items-center gap-1"
+          <button onClick={onToggleForm} className="hover:underline flex items-center gap-1">
+            Add new task
+            <span className="text-xs">{isFormVisible ? '▲' : '▼'}</span>
+          </button>
+
+          <div className="flex-grow"></div>
+
+          <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Search tasks"
+              className="text-black p-1 px-2 rounded border border-gray-300 text-sm"
+              onChange={(e) => onSearchChange(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="bg-yellow-400 text-black px-3 py-1 text-sm font-semibold rounded hover:bg-yellow-500"
             >
-              Add New Task
-              <span className="text-xs">{isFormVisible ? '▲' : '▼'}</span>
+              Search
             </button>
-
-         <form
-          className="flex items-center space-x-1"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <input
-            type="text"
-            placeholder="Search tasks"
-            className="text-black p-1 px-2 rounded border border-gray-400 text-sm"
-            onChange={(e) => onSearchChange(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="bg-yellow-400 text-black px-3 py-1 text-sm font-semibold rounded hover:bg-yellow-500"
-          >
-            Search
-          </button>
-        </form>
-
-        </nav>
-      </div>
-    </header>
+          </form>
+        </div>
+      </nav>
+    </>
   );
 }

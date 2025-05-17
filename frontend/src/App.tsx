@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import Header from './components/Header';
 import { TaskForm } from './components/TaskForm';
-
-import {TaskList} from './components/TaskList';
+import ConfirmDeleteModal from './components/ConfirmDeleteModal';
+import NotificationBanner from './components/NotificationBanner';
+import { TaskList } from './components/TaskList';
 
 interface Task {
   id: string;
@@ -21,12 +22,22 @@ export default function App() {
   const [activeView, setActiveView] = useState<'all' | 'complete' | 'open'>('all');
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+  const [bannerMessage, setBannerMessage] = useState('');
+  const [bannerType, setBannerType] = useState<'success' | 'error'>('success');
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchTasks();
   }, []);
+
+  const showBanner = (message: string, type: 'success' | 'error' = 'success') => {
+    setBannerMessage(message);
+    setBannerType(type);
+    setTimeout(() => setBannerMessage(''), 5000);
+  };
 
   const fetchTasks = async () => {
     try {
@@ -35,7 +46,8 @@ export default function App() {
       setTasks(data);
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch tasks", error);
+      console.error('Failed to fetch tasks', error);
+      showBanner('Failed to load tasks', 'error');
       setLoading(false);
     }
   };
@@ -59,9 +71,12 @@ export default function App() {
       setDueDatetime('');
       fetchTasks();
       setShowForm(false);
+      showBanner('Task created successfully');
       setTimeout(() => {
         document.getElementById('task-form-section')?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
+    } else {
+      showBanner('Failed to create task', 'error');
     }
   };
 
@@ -72,14 +87,24 @@ export default function App() {
       body: JSON.stringify({ status: 'Complete' }),
     });
     fetchTasks();
+    showBanner('Task marked as complete');
   };
 
-  const handleDelete = async (id: string) => {
-    await fetch(`${apiUrl}/tasks/${id}`, { method: 'DELETE' });
-    fetchTasks();
+  const confirmDelete = async () => {
+    if (!taskToDelete) return;
+    try {
+      await fetch(`${apiUrl}/tasks/${taskToDelete}`, { method: 'DELETE' });
+      setShowDeleteModal(false);
+      setTaskToDelete(null);
+      fetchTasks();
+      showBanner('Task deleted');
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+      showBanner('Failed to delete task', 'error');
+    }
   };
 
-  const filteredTasks = tasks.filter(task => {
+  const filteredTasks = tasks.filter((task) => {
     const matchesView =
       activeView === 'complete'
         ? task.status.toLowerCase() === 'complete'
@@ -87,31 +112,42 @@ export default function App() {
         ? task.status.toLowerCase() !== 'complete'
         : true;
 
-    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
 
     return matchesView && matchesSearch;
   });
 
   return (
     <>
-     <Header
-          onViewChange={setActiveView}
-          onToggleForm={() => setShowForm(prev => !prev)}
-          isFormVisible={showForm}
-          onSearchChange={setSearchQuery}
-        />
-          <div className="max-w-4xl mx-auto px-4 pt-8 pb-4 font-sans text-black">
-      <h1 className="text-2xl font-bold mb-4">
-        {showForm
-          ? 'Add New Task'
-          : activeView === 'complete'
-          ? 'Completed Tasks'
-          : activeView === 'open'
-          ? 'Current Tasks'
-          : 'All Tasks'}
-      </h1>
-    </div>
+      <Header
+        onViewChange={setActiveView}
+        onToggleForm={() => setShowForm((prev) => !prev)}
+        isFormVisible={showForm}
+        onSearchChange={setSearchQuery}
+      />
+
+      <div className="max-w-4xl mx-auto px-4 pt-8 pb-4 font-sans text-black">
+        {bannerMessage && (
+          <NotificationBanner
+            message={bannerMessage}
+            type={bannerType}
+            onClose={() => setBannerMessage('')}
+          />
+        )}
+
+        <h1 className="text-2xl font-bold mb-4">
+          {showForm
+            ? 'Add New Task'
+            : activeView === 'complete'
+            ? 'Completed Tasks'
+            : activeView === 'open'
+            ? 'Current Tasks'
+            : 'All Tasks'}
+        </h1>
+      </div>
+
       <div className="max-w-4xl mx-auto px-4 py-10 font-sans text-black">
         {showForm && (
           <div id="task-form-section">
@@ -136,10 +172,22 @@ export default function App() {
           <TaskList
             tasks={filteredTasks}
             onComplete={handleUpdateStatus}
-            onDelete={handleDelete}
+            onDelete={(id) => {
+              setTaskToDelete(id);
+              setShowDeleteModal(true);
+            }}
           />
         )}
       </div>
+
+      <ConfirmDeleteModal
+        visible={showDeleteModal}
+        onConfirm={confirmDelete}
+        onCancel={() => {
+          setShowDeleteModal(false);
+          setTaskToDelete(null);
+        }}
+      />
     </>
   );
 }
