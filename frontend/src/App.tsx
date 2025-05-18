@@ -27,7 +27,7 @@ export default function App() {
   const [bannerMessage, setBannerMessage] = useState('');
   const [bannerType, setBannerType] = useState<'success' | 'error'>('success');
 
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = "https://dts-developer-challenge-production.up.railway.app";
 
   console.log("API base URL:", import.meta.env.VITE_API_URL);
 
