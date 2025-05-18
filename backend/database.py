@@ -1,11 +1,12 @@
 #backend/database.py
-
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Local SQLite file
-SQLALCHEMY_DATABASE_URL = "sqlite:///./tasks.db"
+# This keeps your local dev using SQLite, and production using PostgreSQL automatically.
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./tasks.db")
+
 
 # Create engine
 engine = create_engine(
