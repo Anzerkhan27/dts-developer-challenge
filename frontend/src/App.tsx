@@ -29,6 +29,9 @@ export default function App() {
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
+  console.log("API base URL:", import.meta.env.VITE_API_URL);
+
+
   useEffect(() => {
     fetchTasks();
   }, []);
